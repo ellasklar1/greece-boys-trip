@@ -9,11 +9,14 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html, body {
+      height: 100%;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: #000;
       color: #fff;
-      height: 100vh;
       overflow: hidden;
       user-select: none;
     }
@@ -170,17 +173,19 @@
     /* ── SLIDE 4: VILLA ── */
     #s4 {
       padding: 0;
-      background: #000;
       position: relative;
       align-items: stretch;
       justify-content: stretch;
-    }
-    .villa-bg {
-      position: absolute; inset: 0;
       background-image: url('https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals55.jpg');
       background-size: cover;
       background-position: center;
-      filter: brightness(0.45);
+    }
+    #s4::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 1;
     }
     .villa-content {
       position: relative; z-index: 2;
@@ -376,7 +381,6 @@
 
   <!-- SLIDE 4: VILLA -->
   <div class="slide" id="s4">
-    <div class="villa-bg"></div>
     <div class="villa-content">
       <div class="slide-label">Paros · June 2–6</div>
       <h2>Marena Estate</h2>
@@ -475,7 +479,7 @@
 
   // Villa bg swap
   function changeBg(src) {
-    document.querySelector('.villa-bg').style.backgroundImage = `url('${src}')`;
+    document.getElementById('s4').style.backgroundImage = `url('${src}')`;
   }
 </script>
 
