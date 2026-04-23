@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Greece 2025</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── SLIDE ENGINE ── */
+    .deck { width: 100vw; height: 100vh; position: relative; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s ease;
+      padding: 60px;
+    }
+    .slide.active { opacity: 1; pointer-events: all; }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 20px;
+      z-index: 999;
+    }
+    .nav button {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; border-radius: 50%;
+      width: 44px; height: 44px; font-size: 18px;
+      cursor: pointer; transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav button:hover { background: rgba(255,255,255,0.25); }
+    .dots { display: flex; gap: 8px; align-items: center; }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .dot.active { background: #fff; transform: scale(1.3); }
+
+    /* ── SLIDE 1: COVER ── */
+    #s1 { background: #080c14; text-align: center; }
+    #s1 .eyebrow {
+      font-size: 11px; letter-spacing: 6px;
+      color: #c9a86c; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    #s1 h1 {
+      font-size: clamp(80px, 16vw, 160px);
+      font-weight: 900;
+      letter-spacing: -4px;
+      line-height: 0.85;
+      background: linear-gradient(135deg, #fff 40%, #8ab4d8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #s1 .tagline {
+      margin-top: 32px;
+      font-size: 15px;
+      letter-spacing: 4px;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+    }
+    #s1 .dates {
+      margin-top: 14px;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: #c9a86c;
+    }
+    .accent-line {
+      width: 48px; height: 2px;
+      background: #c9a86c;
+      margin: 28px auto;
+    }
+
+    /* ── SLIDE 2: PLAN ── */
+    #s2 { background: #0d0d0d; align-items: flex-start; justify-content: center; }
+    #s2 .slide-inner { max-width: 700px; width: 100%; }
+    .slide-label {
+      font-size: 10px; letter-spacing: 5px;
+      color: #c9a86c; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    #s2 h2 { font-size: 42px; font-weight: 800; margin-bottom: 48px; }
+
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: flex; gap: 28px; align-items: flex-start;
+      position: relative; padding-bottom: 32px;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-left { display: flex; flex-direction: column; align-items: center; min-width: 80px; }
+    .tl-date {
+      font-size: 12px; font-weight: 600;
+      color: #c9a86c; white-space: nowrap;
+    }
+    .tl-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #c9a86c; margin: 8px 0;
+      flex-shrink: 0;
+    }
+    .tl-line {
+      width: 1px; flex: 1;
+      background: rgba(255,255,255,0.1);
+      min-height: 30px;
+    }
+    .tl-item:last-child .tl-line { display: none; }
+    .tl-content h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .tl-content p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+    /* ── SLIDE 3: OPTIONS ── */
+    #s3 { background: #0a0a0a; align-items: flex-start; justify-content: center; }
+    #s3 .slide-inner { max-width: 780px; width: 100%; }
+    #s3 h2 { font-size: 42px; font-weight: 800; margin-bottom: 36px; }
+
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .option-card {
+      border-radius: 16px;
+      padding: 28px;
+      position: relative; overflow: hidden;
+    }
+    .option-card.recommended {
+      background: linear-gradient(135deg, #1a2a3a, #0f1d2e);
+      border: 1px solid rgba(138, 180, 216, 0.3);
+    }
+    .option-card.alt {
+      background: #141414;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .rec-badge {
+      position: absolute; top: 16px; right: 16px;
+      background: #c9a86c; color: #000;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 2px; padding: 4px 8px;
+      border-radius: 4px; text-transform: uppercase;
+    }
+    .option-icon { font-size: 32px; margin-bottom: 12px; }
+    .option-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .option-card .option-dates { font-size: 11px; color: #c9a86c; letter-spacing: 2px; margin-bottom: 16px; }
+    .option-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .option-card ul li {
+      font-size: 13px; color: rgba(255,255,255,0.65);
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .option-card ul li::before { content: "→"; color: #c9a86c; flex-shrink: 0; }
+    .option-cost {
+      font-size: 24px; font-weight: 800;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 16px;
+    }
+    .option-cost span { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.4); display: block; margin-top: 2px; }
+
+    /* ── SLIDE 4: VILLA ── */
+    #s4 {
+      padding: 0;
+      background: #000;
+      position: relative;
+    }
+    .villa-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals55.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.45);
+    }
+    .villa-content {
+      position: relative; z-index: 2;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 60px;
+    }
+    .villa-content .slide-label { color: #c9a86c; }
+    .villa-content h2 {
+      font-size: clamp(36px, 6vw, 68px);
+      font-weight: 900; line-height: 1;
+      margin-bottom: 8px;
+    }
+    .villa-location {
+      font-size: 14px; letter-spacing: 3px;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase; margin-bottom: 32px;
+    }
+    .villa-features {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .feature-pill {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 13px; font-weight: 500;
+    }
+    .villa-photos {
+      display: flex; gap: 10px;
+    }
+    .villa-thumb {
+      width: 90px; height: 65px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .villa-thumb:hover { border-color: #c9a86c; }
+
+    /* ── SLIDE 5: BUDGET ── */
+    #s5 { background: #080c14; align-items: flex-start; justify-content: center; }
+    #s5 .slide-inner { max-width: 680px; width: 100%; }
+    #s5 h2 { font-size: 42px; font-weight: 800; margin-bottom: 40px; }
+
+    .budget-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+    .budget-col h4 {
+      font-size: 11px; letter-spacing: 3px;
+      color: #c9a86c; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .budget-row {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      font-size: 14px;
+    }
+    .budget-row .label { color: rgba(255,255,255,0.55); }
+    .budget-row .val { font-weight: 600; }
+    .budget-total {
+      background: linear-gradient(135deg, #1a2030, #0f1825);
+      border: 1px solid rgba(201,168,108,0.3);
+      border-radius: 14px;
+      padding: 24px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .budget-total .tot-label { font-size: 13px; color: rgba(255,255,255,0.5); }
+    .budget-total .tot-amount { font-size: 36px; font-weight: 900; color: #c9a86c; }
+    .budget-total .tot-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide active" id="s1">
+    <div class="eyebrow">Summer 2025 &nbsp;·&nbsp; 6–8 Guys</div>
+    <h1>GREECE</h1>
+    <div class="accent-line"></div>
+    <div class="tagline">Mykonos &nbsp;·&nbsp; Paros</div>
+    <div class="dates">May 29 – June 7</div>
+  </div>
+
+  <!-- SLIDE 2: THE PLAN -->
+  <div class="slide" id="s2">
+    <div class="slide-inner">
+      <div class="slide-label">The Itinerary</div>
+      <h2>The Plan</h2>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-date">May 29</div>
+            <div class="tl-dot"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-content">
+            <h3>Depart NYC</h3>
+            <p>Overnight flight to Athens</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-date">May 30</div>
+            <div class="tl-dot"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-content">
+            <h3>Arrive Athens → Mykonos or Athens</h3>
+            <p>3 nights of going out before Paros</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-date">June 2</div>
+            <div class="tl-dot"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-content">
+            <h3>Ferry to Paros</h3>
+            <p>Meet the girls · Check into Marena Estate</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-date">June 2–6</div>
+            <div class="tl-dot"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-content">
+            <h3>Paros</h3>
+            <p>Beaches · Nightlife · Boat days · The villa</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-date">June 7</div>
+            <div class="tl-dot"></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-content">
+            <h3>Fly Home</h3>
+            <p>Ferry back to Athens · Flight to NYC</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: OPTIONS -->
+  <div class="slide" id="s3">
+    <div class="slide-inner">
+      <div class="slide-label">Before Paros · May 30–June 2</div>
+      <h2>Pick One</h2>
+      <div class="options-grid">
+        <div class="option-card recommended">
+          <div class="rec-badge">Recommended</div>
+          <h3>Mykonos</h3>
+          <div class="option-dates">Fly from Athens · 45 min</div>
+          <ul>
+            <li>World-class nightlife & beach clubs</li>
+            <li>Scorpios, Paradise Beach, Little Venice</li>
+            <li>45-min ferry straight to Paros</li>
+            <li>Higher daily spend on food & drinks</li>
+          </ul>
+          <div class="option-cost">
+            $2,190
+            <span>Fixed costs · +$150–200/day spending</span>
+          </div>
+        </div>
+        <div class="option-card alt">
+          <h3>Athens</h3>
+          <div class="option-dates">Stay in city · No flight needed</div>
+          <ul>
+            <li>Acropolis, Monastiraki, rooftop bars</li>
+            <li>Psirri & Gazi nightlife districts</li>
+            <li>3.5-hr ferry to Paros</li>
+            <li>Way cheaper food & drinks</li>
+          </ul>
+          <div class="option-cost">
+            $2,160
+            <span>Fixed costs · +$80–120/day spending</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: VILLA -->
+  <div class="slide" id="s4">
+    <div class="villa-bg"></div>
+    <div class="villa-content">
+      <div class="slide-label">Paros · June 2–6</div>
+      <h2>Marena Estate</h2>
+      <div class="villa-location">Krotiri, Paros · Aegean Sea Views</div>
+      <div class="villa-features">
+        <div class="feature-pill">Infinity Pool</div>
+        <div class="feature-pill">Open-Air Cinema</div>
+        <div class="feature-pill">BBQ + Outdoor Dining</div>
+        <div class="feature-pill">8 Bedrooms</div>
+        <div class="feature-pill">Panoramic Sea Views</div>
+        <div class="feature-pill">5 min to Beach</div>
+      </div>
+      <div class="villa-photos">
+        <img class="villa-thumb" src="https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals55.jpg" onclick="changeBg(this.src)" />
+        <img class="villa-thumb" src="https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals50.jpg" onclick="changeBg(this.src)" />
+        <img class="villa-thumb" src="https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals45.jpg" onclick="changeBg(this.src)" />
+        <img class="villa-thumb" src="https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals47.jpg" onclick="changeBg(this.src)" />
+        <img class="villa-thumb" src="https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals42.jpg" onclick="changeBg(this.src)" />
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: BUDGET -->
+  <div class="slide" id="s5">
+    <div class="slide-inner">
+      <div class="slide-label">The Numbers</div>
+      <h2>Budget Breakdown</h2>
+      <div class="budget-cols">
+        <div class="budget-col">
+          <h4>Option A · Mykonos</h4>
+          <div class="budget-row"><span class="label">International flights</span><span class="val">$1,200</span></div>
+          <div class="budget-row"><span class="label">Inter-island travel</span><span class="val">$330</span></div>
+          <div class="budget-row"><span class="label">Mykonos hotel</span><span class="val">$80</span></div>
+          <div class="budget-row"><span class="label">Paros villa</span><span class="val">$580</span></div>
+          <div class="budget-row" style="border:none"><span class="label" style="color:#c9a86c;font-weight:700">Fixed total</span><span class="val" style="color:#c9a86c">$2,190</span></div>
+        </div>
+        <div class="budget-col">
+          <h4>Option B · Athens</h4>
+          <div class="budget-row"><span class="label">International flights</span><span class="val">$1,200</span></div>
+          <div class="budget-row"><span class="label">Inter-island travel</span><span class="val">$265</span></div>
+          <div class="budget-row"><span class="label">Athens hotel</span><span class="val">$115</span></div>
+          <div class="budget-row"><span class="label">Paros villa</span><span class="val">$580</span></div>
+          <div class="budget-row" style="border:none"><span class="label" style="color:#c9a86c;font-weight:700">Fixed total</span><span class="val" style="color:#c9a86c">$2,160</span></div>
+        </div>
+      </div>
+      <div class="budget-total">
+        <div>
+          <div class="tot-label">All-in target</div>
+          <div class="tot-note">Includes food, drinks & spending</div>
+        </div>
+        <div style="text-align:right">
+          <div class="tot-amount">~$3,000</div>
+          <div class="tot-note">per person</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <button id="prev" onclick="go(-1)">‹</button>
+  <div class="dots" id="dots"></div>
+  <button id="next" onclick="go(1)">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  let cur = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+  }
+
+  function go(dir) { goTo(cur + dir); }
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+  });
+
+  // Villa bg swap
+  function changeBg(src) {
+    document.querySelector('.villa-bg').style.backgroundImage = `url('${src}')`;
+  }
+</script>
+
+</body>
+</html>
