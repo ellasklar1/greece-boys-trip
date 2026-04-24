@@ -94,7 +94,7 @@
     }
 
     /* ── SLIDE 2: PLAN ── */
-    #s2 { background: #0d0d0d; align-items: flex-start; justify-content: center; }
+    #s2 { background: #0d0d0d; align-items: center; justify-content: center; }
     #s2 .slide-inner { max-width: 700px; width: 100%; }
     .slide-label {
       font-size: 10px; letter-spacing: 5px;
@@ -129,7 +129,7 @@
     .tl-content p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5; }
 
     /* ── SLIDE 3: OPTIONS ── */
-    #s3 { background: #0a0a0a; align-items: flex-start; justify-content: center; }
+    #s3 { background: #0a0a0a; align-items: center; justify-content: center; }
     #s3 .slide-inner { max-width: 780px; width: 100%; }
     #s3 h2 { font-size: 42px; font-weight: 800; margin-bottom: 36px; }
 
@@ -173,9 +173,6 @@
     /* ── SLIDE 4: VILLA ── */
     #s4 {
       padding: 0;
-      position: relative;
-      align-items: stretch;
-      justify-content: stretch;
       background-image: url('https://oliverentals.com/wp-content/uploads/2026/01/Marena-Estate-in-Paros-by-Olive-rentals55.jpg');
       background-size: cover;
       background-position: center;
@@ -188,11 +185,13 @@
       z-index: 1;
     }
     .villa-content {
-      position: relative; z-index: 2;
-      width: 100%; flex: 1;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 2;
       display: flex; flex-direction: column;
-      justify-content: flex-end;
+      justify-content: flex-end; align-items: center;
       padding: 60px;
+      text-align: center;
     }
     .villa-content .slide-label { color: #c9a86c; }
     .villa-content h2 {
@@ -208,6 +207,7 @@
     .villa-features {
       display: flex; gap: 12px; flex-wrap: wrap;
       margin-bottom: 32px;
+      justify-content: center;
     }
     .feature-pill {
       background: rgba(255,255,255,0.12);
@@ -219,6 +219,7 @@
     }
     .villa-photos {
       display: flex; gap: 10px;
+      justify-content: center;
     }
     .villa-thumb {
       width: 90px; height: 65px;
@@ -231,7 +232,7 @@
     .villa-thumb:hover { border-color: #c9a86c; }
 
     /* ── SLIDE 5: BUDGET ── */
-    #s5 { background: #080c14; align-items: flex-start; justify-content: center; }
+    #s5 { background: #080c14; align-items: center; justify-content: center; }
     #s5 .slide-inner { max-width: 680px; width: 100%; }
     #s5 h2 { font-size: 42px; font-weight: 800; margin-bottom: 40px; }
 
